@@ -1,9 +1,10 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, NotImplementedException, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthResult } from './auth.types';
 import { AuthInputDto } from './auth-input.dto';
 import { CreateUserDto } from 'src/users/create-user.dto';
 import { SigninData } from './auth.types';
+import { AuthGuard } from './guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -19,5 +20,11 @@ export class AuthController {
   @Post('register')
   async register(@Body() input: CreateUserDto): Promise<SigninData> {
     return this.authService.register(input);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get("me")
+  getUserProfile(@Request() req){
+    return req.user;
   }
 }
