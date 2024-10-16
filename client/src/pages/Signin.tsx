@@ -1,33 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { login, register } from '@/lib/api';
+import { Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SignIn() {
-  const { signIn, signUp, isAuthenticated } = useAuth();
+  const { setCredentials } = useAuth();
   const [signinData, setSigninData] = useState({ username: '', password: '' });
   const [signupData, setSignupData] = useState({ username: '', name: '', password: '' });
+  const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    signIn(signinData.username, signinData.password);
-  };
-
-  const handleSignUp = (e: React.FormEvent) => {
-    e.preventDefault();
-    signUp(signupData.username, signupData.name, signupData.password);
-  };
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await login(signinData.username, signinData.password);
+      setCredentials(data.accessToken);  
+      navigate('/')
+    } catch (error:any) {
+      setError(error?.response?.data.message || 'An error occurred during sign in');      
+    } finally {
+      setLoading(false);
     }
-  }, [isAuthenticated, navigate]);
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await register(signupData.name,signupData.username,signupData.password);      
+      alert("Registration Successful. Please Login.");
+    } catch (error:any) {
+      setError(error?.response?.data.message || 'An error occurred during sign up');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -37,6 +55,11 @@ export default function SignIn() {
           <CardDescription>Sign in to your account or create a new one</CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive"  className="mb-4 text-slate-300">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <Tabs defaultValue="signin">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
@@ -66,7 +89,16 @@ export default function SignIn() {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full">Sign In</Button>
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Signing In...
+                    </>
+                  ) : (
+                    'Sign In'
+                  )}
+                </Button>
               </form>
             </TabsContent>
             <TabsContent value="signup">
@@ -104,7 +136,16 @@ export default function SignIn() {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full">Sign Up</Button>
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Signing Up...
+                    </>
+                  ) : (
+                    'Sign Up'
+                  )}
+                </Button>
               </form>
             </TabsContent>
           </Tabs>

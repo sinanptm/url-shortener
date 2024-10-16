@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from "@/lib/useAuth"
+import {  useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -29,22 +27,11 @@ interface ShortenedURL {
 }
 
 export default function Dashboard() {
-  const { isAuthenticated } = useAuth()
-  const navigate = useNavigate()
   const [urls, setUrls] = useState<ShortenedURL[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/signin')
-    } else {
-      // Fetch user's shortened URLs
-      fetchUserUrls()
-    }
-  }, [isAuthenticated, navigate])
+  
 
   const fetchUserUrls = async () => {
-    // This is a mock function. Replace with actual API call.
     const mockUrls: ShortenedURL[] = [
       { id: '1', originalUrl: 'https://example.com', shortUrl: 'http://short.url/abc123', createdAt: '2023-05-20', clicks: 10 },
       { id: '2', originalUrl: 'https://longwebsite.com/very/long/url', shortUrl: 'http://short.url/def456', createdAt: '2023-05-21', clicks: 5 },
@@ -52,8 +39,10 @@ export default function Dashboard() {
     setUrls(mockUrls)
   }
 
+  useEffect(()=>{
+    fetchUserUrls();
+  },[])
   const handleDelete = async (id: string) => {
-    // This is a mock function. Replace with actual API call.
     setUrls(urls.filter(url => url.id !== id))
   }
 

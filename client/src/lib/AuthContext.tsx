@@ -1,17 +1,19 @@
-import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  signIn: (userName: string, password: string) => void;
   signOut: () => void;
-  signUp: (userName: string, name: string, password: string) => void;
+  setCredentials: (token: string) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode; }> = ({ children }) => {
   const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
-  const token = useMemo(() => localStorage.getItem('token'), []);
+  const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     if (token) {
@@ -21,21 +23,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode; }> = ({ childre
     }
   }, [token]);
 
-  const signIn = useCallback((userName: string, password: string) => {
-    setAuthenticated(true);
-  }, []);
-
   const signOut = useCallback(() => {
     localStorage.removeItem('token');
+    navigate('/');
     setAuthenticated(false);
   }, []);
 
-  const signUp = useCallback((userName: string, name: string, password: string) => {
+  const setCredentials = (token: string) => {
+    if (token) {
+      localStorage.setItem("token", token);
+      setAuthenticated(true);
+      console.log(token);
 
-  }, []);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, signUp }}>
+    <AuthContext.Provider value={{ isAuthenticated, signOut, setCredentials }}>
       {children}
     </AuthContext.Provider>
   );

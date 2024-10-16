@@ -5,7 +5,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 
 type SigninData = { userName: string, _id: string; };
-type AuthResult = { accessToken: string; _id: string; userName: string; };
+type AuthResult = { accessToken: string; _id?: string; userName?: string; };
 
 @Injectable()
 export class AuthService {
@@ -17,6 +17,7 @@ export class AuthService {
     async authenticate(input: AuthInputDto): Promise<AuthResult> {
         const user = await this.validateUser(input);
 
+        
         if (!user) {
             throw new UnauthorizedException();
         }
@@ -26,7 +27,7 @@ export class AuthService {
 
     private async signIn(user: SigninData): Promise<AuthResult> {
         const accessToken = await this.jwtService.signAsync(user);
-        return { accessToken, ...user };
+        return { accessToken };
     }
 
     async register(input: CreateUserDto): Promise<SigninData> {

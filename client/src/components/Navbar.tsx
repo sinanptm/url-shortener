@@ -2,7 +2,7 @@ import { Link2 as LinkIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from './ThemeToggle';
 import { useNavigate } from 'react-router';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 export default function Navbar() {
   const { isAuthenticated, signOut } = useAuth();
