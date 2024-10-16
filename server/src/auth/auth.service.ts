@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { AuthInputDto } from './auth-input.dto';
-import { CreateUserDto } from 'src/users/create-user.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 
 type SigninData = { userName: string, _id: string; };
@@ -30,7 +30,7 @@ export class AuthService {
     }
 
     async register(input: CreateUserDto): Promise<SigninData> {
-        const existingUser = await this.usersService.findOne(input.userName);
+        const existingUser = await this.usersService.findByUserName(input.userName);
         if (existingUser) {
             throw new ConflictException('Username already taken');
         }
@@ -43,7 +43,7 @@ export class AuthService {
     }
 
     private async validateUser(input: AuthInputDto): Promise<SigninData | null> {
-        const user = await this.usersService.findOne(input.userName);
+        const user = await this.usersService.findByUserName(input.userName);
 
         if (user && user.password === input.password) {
             return {
