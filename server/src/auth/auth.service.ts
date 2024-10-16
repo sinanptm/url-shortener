@@ -2,13 +2,17 @@ import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/co
 import { UsersService } from 'src/users/users.service';
 import { AuthInputDto } from './auth-input.dto';
 import { CreateUserDto } from 'src/users/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 type SigninData = { userName: string, _id: string; };
 type AuthResult = { accessToken: string; _id: string; userName: string; };
 
 @Injectable()
 export class AuthService {
-    constructor(private usersService: UsersService) { }
+    constructor(
+        private usersService: UsersService,
+        private jwtService: JwtService
+    ) { }
 
     async authenticate(input: AuthInputDto): Promise<AuthResult> {
         const user = await this.validateUser(input);
@@ -17,10 +21,12 @@ export class AuthService {
             throw new UnauthorizedException();
         }
 
-        return {
-            accessToken: "fake-one",
-            ...user
-        };
+        return await this.signIn(user);
+    }
+
+    private async signIn(user: SigninData): Promise<AuthResult> {
+        const accessToken = await this.jwtService.signAsync(user);
+        return { accessToken, ...user };
     }
 
     async register(input: CreateUserDto): Promise<SigninData> {
