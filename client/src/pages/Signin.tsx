@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,12 +11,19 @@ import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SignIn() {
-  const { setCredentials } = useAuth();
+  const { setCredentials, isAuthenticated } = useAuth();
   const [signinData, setSigninData] = useState({ username: '', password: '' });
   const [signupData, setSignupData] = useState({ username: '', name: '', password: '' });
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  
+  useEffect(() => {
+      if(isAuthenticated){
+        navigate('/');
+      }
+      console.log(isAuthenticated);
+  }, [isAuthenticated]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

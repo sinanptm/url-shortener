@@ -19,6 +19,8 @@ import {
 import { Trash2, ExternalLink, Search } from 'lucide-react';
 import { getUserLinks, markLinkClick, deleteLink } from '@/lib/api';
 import { Link } from '@/types';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 function useDebounce(value: string, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -39,6 +41,17 @@ function useDebounce(value: string, delay: number) {
 export default function Dashboard() {
   const [urls, setUrls] = useState<Link[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/');
+    }
+    console.log(isAuthenticated);
+  }, [isAuthenticated]);
+
+
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
@@ -57,8 +70,10 @@ export default function Dashboard() {
   }, [markLinkClick]);
 
   useEffect(() => {
-    fetchUserUrls();
-  }, []);
+    if (isAuthenticated) {
+      fetchUserUrls();
+    }
+  }, [isAuthenticated]);
 
   const handleDelete = useCallback(async (id: string) => {
     if (confirm("Are you sure you want to permanently remove this url 💀")) {
@@ -87,7 +102,6 @@ export default function Dashboard() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
           />
-          <Search className="text-gray-400" />
         </div>
         <Table>
           <TableHeader>
