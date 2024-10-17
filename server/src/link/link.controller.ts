@@ -8,8 +8,8 @@ export class LinkController {
 
     @UseGuards(AuthGuard)
     @Post()
-    async create(@Body() link: string, @Request() req) {
-        return this.linkService.createLink({ orgLink: link, userId: req.user._id });
+    async create(@Body() { orgLink }: { orgLink: string; }, @Request() req) {
+        return this.linkService.createLink({ orgLink, userId: req.user._id });
     }
 
     @Get("/:shortLink")

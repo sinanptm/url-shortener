@@ -1,19 +1,26 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Link, LinkDocument } from './link.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateLinkDto } from './dto/create-link.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class LinkService {
     constructor(
         @InjectModel(Link.name) private linkModel: Model<LinkDocument>,
-        @Inject("NANOID") private nanoId: () => string
+        @Inject("NANOID") private nanoId: () => string,
+        private userService: UsersService
     ) { }
 
-    async createLink(link: CreateLinkDto): Promise<LinkDocument> {
+    async createLink({ orgLink, userId }: CreateLinkDto): Promise<LinkDocument> {
+        const user = await this.userService.findById(userId)
+        if(!user){
+            throw new NotFoundException()
+        }
         const shortLink = await this.createShortLink();
-        return await this.linkModel.create({ ...link, shortLink });
+        
+        return await this.linkModel.create({ orgLink, userId, shortLink });
     }
 
     private async createShortLink(): Promise<string> {
@@ -34,7 +41,7 @@ export class LinkService {
 
     async findByShortLink(shortLink: string): Promise<LinkDocument | null> {
         const link = await this.linkModel.findOne({ shortLink });
-        
+
         if (link) {
             await this.linkModel.findByIdAndUpdate(link._id, { $inc: { click: 1 } });
             return link;

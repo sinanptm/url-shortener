@@ -1,16 +1,27 @@
-import React, { useState } from 'react'
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Link } from 'lucide-react'
+import React, { useState } from 'react';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link as LinkICon } from 'lucide-react';
+import { createShortUrl } from '@/lib/api';
+import { Link } from '@/types';
 
 export default function Home() {
-  const [url, setUrl] = useState('')
-  const [shortenedUrl, setShortenedUrl] = useState('')
+  const [url, setUrl] = useState('');
+  const [shortenedUrl, setShortenedUrl] = useState<Link>();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setShortenedUrl(`https://short.url/${Math.random().toString(36).substr(2, 6)}`)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const data = await createShortUrl(url);
+      setShortenedUrl(data.shortLink);
+    } catch (error: any) {
+      console.log(error.response.data.message);
+    }
+  };
+
+  const handleLinkClick = (id:string)=>{
+    
   }
 
   return (
@@ -38,14 +49,18 @@ export default function Home() {
             <div className="mt-4 p-4 bg-muted rounded-md">
               <p className="text-sm font-medium text-muted-foreground mb-2">Shortened URL:</p>
               <div className="flex items-center space-x-2">
-                <Link className="h-4 w-4 text-primary" />
+                <LinkICon className="h-4 w-4 text-primary" />
                 <a
-                  href={shortenedUrl}
+                  href={shortenedUrl.shortLink}
+                  onClick={(e)=>{
+                    e.preventDefault();
+                    handleLinkClick(shortenedUrl._id);
+                  }}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline break-all"
                 >
-                  {shortenedUrl}
+                  {shortenedUrl.shortLink}
                 </a>
               </div>
             </div>
@@ -53,5 +68,5 @@ export default function Home() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

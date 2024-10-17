@@ -4,11 +4,13 @@ import { LinkService } from './link.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Link, LinkSchema } from './link.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Link.name, schema: LinkSchema }]),
-    AuthModule
+    AuthModule,
+    UsersModule
   ],
   controllers: [LinkController],
   providers: [LinkService]
