@@ -1,7 +1,7 @@
 import { Link } from '@/types';
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:8080';
+const baseUrl = 'https://url-shortener-w5wt.onrender.com';
 
 const getToken = () => localStorage.getItem("token");
 
