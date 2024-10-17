@@ -24,26 +24,6 @@
   <img src="https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
 </p>
 
-## Learning NestJS
-
-<p align="center">
-  <img src="https://nestjs.com/img/logo-small.svg" width="60" alt="Nest Logo" />
-</p>
-
-This project marks my first implementation of NestJS as a backend framework. NestJS is a progressive Node.js framework for building efficient, reliable, and scalable server-side applications. 
-
-Some key aspects I'm exploring with NestJS in this project:
-
-- Modular architecture
-- Dependency injection
-- Decorators for routing and request handling
-- Integration with MongoDB using Mongoose
-- Authentication and authorization with Guards
-
-To learn more about NestJS, check out the [official documentation](https://docs.nestjs.com/).
-
-
-
 ## Features
 
 - 🚀 Shorten long URLs into easily shareable links
@@ -58,6 +38,26 @@ To learn more about NestJS, check out the [official documentation](https://docs.
 - **Backend**: NestJS (Node.js framework), Express.js
 - **Database**: MongoDB
 - **Authentication**: JWT
+
+## Learning NestJS
+
+<p align="center">
+  <img src="https://nestjs.com/img/logo-small.svg" width="60" alt="Nest Logo" />
+</p>
+
+As a NestJS beginner, I am discovering how it differs from traditional Node.js frameworks like Express. With its modular architecture and TypeScript-first approach, NestJS makes it easier to build scalable and testable backend services. I chose NestJS for this project to gain hands-on experience in building a more structured backend.
+
+Some key aspects I'm exploring with NestJS in this project:
+
+- Modular architecture
+- Dependency injection
+- Decorators for routing and request handling
+- Integration with MongoDB using Mongoose
+- Authentication and authorization with Guards
+
+To learn more about NestJS, check out the [official documentation](https://docs.nestjs.com/).
+
+
 
 ## Getting Started
 
