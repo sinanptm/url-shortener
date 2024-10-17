@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Trash2, ExternalLink, Search } from 'lucide-react';
+import { Trash2, ExternalLink } from 'lucide-react';
 import { getUserLinks, markLinkClick, deleteLink } from '@/lib/api';
 import { Link } from '@/types';
 import { useAuth } from '@/lib/hooks/useAuth';
