@@ -15,7 +15,6 @@
   <a href="#usage">Usage</a> •
   <a href="#learning-nestjs">Learning NestJS</a> •
   <a href="#contributing">Contributing</a> •
-  <a href="#license">License</a>
 </p>
 
 <p align="center">
@@ -24,6 +23,26 @@
   <img src="https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" alt="Express.js" />
   <img src="https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
 </p>
+
+## Learning NestJS
+
+<p align="center">
+  <img src="https://nestjs.com/img/logo-small.svg" width="60" alt="Nest Logo" />
+</p>
+
+This project marks my first implementation of NestJS as a backend framework. NestJS is a progressive Node.js framework for building efficient, reliable, and scalable server-side applications. 
+
+Some key aspects I'm exploring with NestJS in this project:
+
+- Modular architecture
+- Dependency injection
+- Decorators for routing and request handling
+- Integration with MongoDB using Mongoose
+- Authentication and authorization with Guards
+
+To learn more about NestJS, check out the [official documentation](https://docs.nestjs.com/).
+
+
 
 ## Features
 
@@ -77,23 +96,3 @@
    cd client
    npm start
    ```
-
-
-## Learning NestJS
-
-<p align="center">
-  <img src="https://nestjs.com/img/logo-small.svg" width="60" alt="Nest Logo" />
-</p>
-
-This project marks my first implementation of NestJS as a backend framework. NestJS is a progressive Node.js framework for building efficient, reliable, and scalable server-side applications. 
-
-Some key aspects I'm exploring with NestJS in this project:
-
-- Modular architecture
-- Dependency injection
-- Decorators for routing and request handling
-- Integration with MongoDB using Mongoose
-- Authentication and authorization with Guards
-
-To learn more about NestJS, check out the [official documentation](https://docs.nestjs.com/).
-
