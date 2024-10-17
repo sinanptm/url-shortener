@@ -1,6 +1,6 @@
-import {  useEffect, useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useCallback, useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -8,48 +8,69 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Trash2, ExternalLink, Search } from 'lucide-react'
+} from "@/components/ui/card";
+import { Trash2, ExternalLink, Search } from 'lucide-react';
+import { getUserLinks, markLinkClick, deleteLink } from '@/lib/api';
+import { Link } from '@/types';
 
-interface ShortenedURL {
-  id: string
-  originalUrl: string
-  shortUrl: string
-  createdAt: string
-  clicks: number
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
 }
 
 export default function Dashboard() {
-  const [urls, setUrls] = useState<ShortenedURL[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  
+  const [urls, setUrls] = useState<Link[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const fetchUserUrls = async () => {
-    const mockUrls: ShortenedURL[] = [
-      { id: '1', originalUrl: 'https://example.com', shortUrl: 'http://short.url/abc123', createdAt: '2023-05-20', clicks: 10 },
-      { id: '2', originalUrl: 'https://longwebsite.com/very/long/url', shortUrl: 'http://short.url/def456', createdAt: '2023-05-21', clicks: 5 },
-    ]
-    setUrls(mockUrls)
-  }
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  useEffect(()=>{
+  const fetchUserUrls = useCallback(async () => {
+    const links = await getUserLinks();
+    setUrls(links);
+  }, [getUserLinks]);
+
+  const handleClickLink = useCallback(async (id: string) => {
+    try {
+      const link = await markLinkClick(id);
+      window.location.href = link;
+    } catch (error) {
+      console.log(error);
+    }
+  }, [markLinkClick]);
+
+  useEffect(() => {
     fetchUserUrls();
-  },[])
-  const handleDelete = async (id: string) => {
-    setUrls(urls.filter(url => url.id !== id))
-  }
+  }, []);
 
-  const filteredUrls = urls.filter(url => 
-    url.originalUrl.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    url.shortUrl.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const handleDelete = useCallback(async (id: string) => {
+    if (confirm("Are you sure you want to permanently remove this url 💀")) {
+      setUrls(urls.filter(url => url._id !== id));
+      await deleteLink(id);
+    }
+  }, [deleteLink]);
+
+  const filteredUrls = urls.filter(url =>
+    url.orgLink.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+    url.shortLink.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+  );
 
   return (
     <Card className="w-full">
@@ -80,25 +101,29 @@ export default function Dashboard() {
           </TableHeader>
           <TableBody>
             {filteredUrls.map((url) => (
-              <TableRow key={url.id}>
-                <TableCell className="font-medium">{url.originalUrl}</TableCell>
+              <TableRow key={url._id}>
+                <TableCell className="font-medium">{url.orgLink}</TableCell>
                 <TableCell>
                   <a
-                    href={url.shortUrl}
+                    href={url.shortLink}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={e => {
+                      e.preventDefault();
+                      handleClickLink(url._id);
+                    }}
                     className="flex items-center text-blue-500 hover:underline"
                   >
-                    {url.shortUrl} <ExternalLink className="ml-1 h-4 w-4" />
+                    {url.shortLink} <ExternalLink className="ml-1 h-4 w-4" />
                   </a>
                 </TableCell>
                 <TableCell>{url.createdAt}</TableCell>
-                <TableCell>{url.clicks}</TableCell>
+                <TableCell>{url.click}</TableCell>
                 <TableCell>
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleDelete(url.id)}
+                    onClick={() => handleDelete(url._id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -112,5 +137,5 @@ export default function Dashboard() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

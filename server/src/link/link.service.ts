@@ -14,13 +14,28 @@ export class LinkService {
     ) { }
 
     async createLink({ orgLink, userId }: CreateLinkDto): Promise<LinkDocument> {
-        const user = await this.userService.findById(userId)
-        if(!user){
-            throw new NotFoundException()
+        const user = await this.userService.findById(userId);
+        if (!user) {
+            throw new NotFoundException();
         }
         const shortLink = await this.createShortLink();
-        
+
         return await this.linkModel.create({ orgLink, userId, shortLink });
+    }
+
+    async clickLink(id: string): Promise<string> {
+        const link = await this.linkModel.findByIdAndUpdate(id, { $inc: { click: 1 } });
+        if (link) {
+            return link.orgLink;
+        }
+    }
+
+    async getUserLinks(userId: string): Promise<LinkDocument[]> {
+        return await this.linkModel.find({ userId });
+    }
+
+    async deleteLink(id:string){
+        await this.linkModel.findByIdAndDelete(id);
     }
 
     private async createShortLink(): Promise<string> {
@@ -37,15 +52,5 @@ export class LinkService {
         }
 
         return shortLink;
-    }
-
-    async findByShortLink(shortLink: string): Promise<LinkDocument | null> {
-        const link = await this.linkModel.findOne({ shortLink });
-
-        if (link) {
-            await this.linkModel.findByIdAndUpdate(link._id, { $inc: { click: 1 } });
-            return link;
-        }
-        return null;
     }
 }
