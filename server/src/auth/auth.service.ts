@@ -1,11 +1,11 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { AuthInputDto } from './auth-input.dto';
+import { AuthInputDto } from './dto/auth-input.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 
-type SigninData = { userName: string, _id: string; };
-type AuthResult = { accessToken: string; _id?: string; userName?: string; };
+export type SigninData = { userName: string, _id: string; };
+export type AuthResult = { accessToken: string; _id?: string; userName?: string; };
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
     async authenticate(input: AuthInputDto): Promise<AuthResult> {
         const user = await this.validateUser(input);
 
-        
+
         if (!user) {
             throw new UnauthorizedException();
         }
