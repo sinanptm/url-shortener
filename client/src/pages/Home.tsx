@@ -16,7 +16,12 @@ export default function Home() {
       const data = await createShortUrl(url);
       setLink(data);
     } catch (error: any) {
-      console.log(error.response.data.message);
+      const message = error.response.data.message || "Unknown Error Occurred";
+      if (message === 'Unauthorized') {
+        alert("Please login in order to use url shortener");
+      } else {
+        alert(message);
+      }
     }
   };
 
@@ -24,10 +29,15 @@ export default function Home() {
     try {
       if (link) {
         const orgLink = await markLinkClick(link._id);
-        window.location.href = orgLink;
+        location.href = orgLink;
       }
     } catch (error: any) {
-      console.log(error.response.data.message);
+      const message = error.response.data.message || "Unknown Error Occurred";
+      if (message === 'Unauthorized') {
+        alert("Please login in order to use url shortener");
+      } else {
+        alert(message);
+      }
     }
   };
 
